@@ -3,7 +3,7 @@
 #using BenchmarkTools
 
 
-use_plots = false
+use_plots = true
 if use_plots
   include("draw.jl")
 end
@@ -52,9 +52,10 @@ function adamOptimize(x, f, ∇f, return_steps=false)
   out = similar(x)
   copyto!(out, x)
   if return_steps
-    temp = x
-    for i = 1:10^6
-      out .= step!(M, out, f, ∇f)
+    temp = out
+    for i = 1:10^4
+      step!(M, out, f, ∇f)
+      println(out)
       temp = [temp out]
     end
     return temp
@@ -74,7 +75,7 @@ function adamOptimizeOld(x, f, ∇f, return_steps=false)
   copyto!(out, x)
   if return_steps
     temp = out
-    for i = 1:10^6
+    for i = 1:10^4
       out .= step!(M, out, f, ∇f)
       temp = [temp out]
     end
@@ -124,11 +125,11 @@ end
 f, ∇f = rosenbrock, rosenbrock_gradient
 
 
-x = [10.0, 10.0]
-println("Adam new:")
-@time adamOptimize(x, f, ∇f) 
-println("Adam old:")
-@time adamOptimizeOld(x, f, ∇f)
+x = [3.0, 2.0]
+#println("Adam new:")
+#@time adamOptimize(x, f, ∇f) 
+#println("Adam old:")
+#@time adamOptimizeOld(x, f, ∇f)
 
 
 # println("Adam old:")
@@ -154,9 +155,10 @@ println("Adam old:")
 # @time out = lbfgsOptimize(f, ∇f, x, 1)
 # println(out)
 #
-# if use_plots
-#   plt = drawBackground(f)
-#   resultAdam = adamOptimize(x, f, ∇f, true)
-#   drawResult!(plt, resultAdam)
-#   display(plt)
-# end
+println("start")
+if use_plots
+  plt = drawBackground(f)
+  resultAdam = adamOptimize(x, f, ∇f, true)
+  drawResult!(plt, resultAdam)
+  savefig(plt, "plot.png")
+end
