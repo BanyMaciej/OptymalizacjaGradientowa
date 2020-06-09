@@ -53,9 +53,8 @@ function adamOptimize(x, f, ∇f, return_steps=false)
   copyto!(out, x)
   if return_steps
     temp = out
-    for i = 1:10^4
+    for i = 1:10^5
       step!(M, out, f, ∇f)
-      println(out)
       temp = [temp out]
     end
     return temp
