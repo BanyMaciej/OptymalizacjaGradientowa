@@ -1,3 +1,7 @@
+#using Pkg
+#Pkg.add("BenchmarkTools")
+#using BenchmarkTools
+
 
 use_plots = false
 if use_plots
@@ -6,11 +10,9 @@ end
 
 include("Adam.jl")
 # include("Adam copy.jl")
-include("Adam copy 2.jl")
+include("Adam_old.jl")
 include("bfgs.jl")
 include("lbfgs.jl")
-
-using BenchmarkTools
 
 # funkcja rosenbrock'a, x - wektor wejściowy dwuwymiarowy, jakby (x, y)
 function rosenbrock(x, a=1, b=100) 
@@ -124,9 +126,9 @@ f, ∇f = rosenbrock, rosenbrock_gradient
 
 x = [10.0, 10.0]
 println("Adam new:")
-@btime adamOptimize($x, $f, $∇f) 
+@time adamOptimize(x, f, ∇f) 
 println("Adam old:")
-@btime adamOptimizeOld($x, $f, $∇f)
+@time adamOptimizeOld(x, f, ∇f)
 
 
 # println("Adam old:")
