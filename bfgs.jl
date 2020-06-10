@@ -1,8 +1,15 @@
 include("utils.jl")
 
-mutable struct BFGS
+mutable struct BFGS <: DescentMethod
   Q::Array{Float64, 2}
-  BFGS(x) = new(Matrix(1.0I, length(x), length(x)))
+  BFGS() = new()
+end
+
+function init!(M::BFGS, θ)  
+  p = length(θ)  
+  # initiated with an identity matrix  
+  M.Q = Matrix(1.0I, p, p)  
+  return M 
 end
 
 function step!(o::BFGS, x, f, ∇f)  

@@ -1,17 +1,17 @@
 include("utils.jl")
 
-mutable struct BFGS  
+mutable struct BFGS_old <: DescentMethod
   Q # approximation of    
   # Hessian matrix inverse  
   BFGS() = new() 
 end 
-function bfgs_init!(M::BFGS, θ)  
+function init!(M::BFGS_old, θ)  
   p = length(θ)  
   # initiated with an identity matrix  
   M.Q = Matrix(1.0I, p, p)  
   return M 
 end
-function bfgs_step!(M::BFGS, f, ∇f, θ)  
+function step!(M::BFGS_old, f, ∇f, θ)  
   Q  = M.Q  
   g  = ∇f(θ)  
   d  = -Q*g  

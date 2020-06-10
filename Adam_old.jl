@@ -1,4 +1,6 @@
-mutable struct Adam_old
+include("utils.jl")
+
+mutable struct Adam_old <: DescentMethod
   α # learning rate  
   ε # small value  
   v # sum gradient  

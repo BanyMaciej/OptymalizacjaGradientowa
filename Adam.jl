@@ -1,4 +1,6 @@
-mutable struct Adam{T<:AbstractFloat}
+include("utils.jl")
+
+mutable struct Adam{T<:AbstractFloat} <: DescentMethod
   α::T # learning rate  
   ε::T # small value  
   v # sum gradient  

@@ -1,21 +1,21 @@
 using LinearAlgebra
 include("utils.jl")
 
-mutable struct LBFGS
+mutable struct LBFGS <: DescentMethod
   m 
   δs 
   γs 
   qs 
-  LBFGS() = new() 
+  LBFGS(m) = (x = new(); x.m = m; return x)
 end 
-function lbfgs_init!(M::LBFGS, m) 
+function init!(M::LBFGS, θ; m = 1) 
   M.m = m 
   M.δs = [] 
   M.γs = [] 
   M.qs = [] 
   return M 
 end 
-function lbfgs_step!(M::LBFGS, f, ∇f,  θ) 
+function step!(M::LBFGS, θ, f, ∇f) 
   δs, γs, qs = M.δs, M.γs, M.qs
   m, g = length(δs),  ∇f(θ)
   d = -g
@@ -39,5 +39,6 @@ function lbfgs_step!(M::LBFGS, f, ∇f,  θ)
   while length(δs) > M.m    
     popfirst!(δs); popfirst!(γs); popfirst!(qs)  
   end  
-  return θ′ 
+  θ .= θ′ 
+  nothing
 end

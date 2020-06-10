@@ -1,6 +1,8 @@
 using LinearAlgebra 
 import Base.MathConstants: φ
 
+abstract type DescentMethod end
+
 function line_search(f, f′, d)
     a, b = bracket_minimum(f)
     x, y = golden_section_search(f, a, b)
