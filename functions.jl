@@ -1,4 +1,6 @@
 # funkcja rosenbrock'a, x - wektor wejściowy dwuwymiarowy, jakby (x, y)
+using Flux
+
 function rosenbrock(x, a=1, b=100) 
   return (a -x[1])^2 + b*(x[2] - x[1]^2)^2
 end
@@ -15,8 +17,13 @@ function rosenbrock_minimum()
 end
 
 function michalewicz(x, m=10)
-  return -sum(sin(v)*sin(i*v^2/π)^(2m)   for 
-    (i,v) in enumerate(x)) 
+  return -sum(sin(v)*sin(i*v^2/π)^(2m) for (i,v) in enumerate(x)) 
+end
+
+
+
+function michalewicz_gradient(x, m=10)
+  gradient(michalewicz, x...)
 end
 
 function michalewicz2_gradient(x, m=10)

@@ -11,7 +11,7 @@ mutable struct Adam{T<:AbstractFloat} <: DescentMethod
   Adam() = new{Float64}() # new uninitialized structure 
 end 
 
-function init!(M::Adam, θ; α=0.001, γv=0.9, γs=0.999, ε=1e-4)
+function init!(M::Adam, θ::Array{Float64}; α=0.001, γv=0.9, γs=0.999, ε=1e-4)
   M.α = α  
   M.ε = ε  
   M.γs = γs  
@@ -41,6 +41,6 @@ end
   M.k = k += 1  
   v̂ = v ./ (1.0 - γv^k)  
   ŝ = s ./ (1.0 - γs^k)  
-  θ .= θ - α*v̂ ./ (sqrt.(ŝ) .+ ε) 
+  θ .-= α*v̂ ./ (sqrt.(ŝ) .+ ε) 
   nothing
 end

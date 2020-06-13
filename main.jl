@@ -9,9 +9,9 @@ if use_plots
 end
 
 include("Adam.jl")
-# include("Adam copy.jl")
 include("Adam_old.jl")
 include("bfgs.jl")
+include("bfgs_old.jl")
 include("lbfgs.jl")
 
 include("functions.jl")
@@ -23,53 +23,53 @@ end
 
 ϵ = 1e-8
 
-function optimize(M::DescentMethod, x, f, ∇f, minimum, ϵ = 1e-6; return_steps=false)
-  init!(M, x)
-  out = similar(x)
-  copyto!(out, x)
-  if return_steps
-    temp = out
-    n = 0
-    while n < 50000
-      n += 1
-      step!(M, out, f, ∇f)
-      temp = [temp out]
-      shouldStop(out, minimum, ϵ) && break
-    end
-    return (temp, n)
-  else
-    n = 0
-    while n < 500000
-      n += 1
-      step!(M, out, f, ∇f)
-      shouldStop(out, minimum, ϵ) && break
-    end
-    return (out, n)
+function optimize!(M::DescentMethod, x, f, ∇f, minimum, ϵ = 1e-6)
+  n = 0
+  while n < 500000
+    n += 1
+    step!(M, x, f, ∇f)
+    shouldStop(x, minimum, ϵ) && break
   end
+  return n
 end
 
-f, ∇f, min = rosenbrock, rosenbrock_gradient, rosenbrock_minimum()
+function optimizeWithSteps!(M::DescentMethod, x, f, ∇f, minimum, ϵ = 1e-6)
+  temp = [deepcopy(x)]
+  n = 0
+  while n < 50000
+    n += 1
+    step!(M, x, f, ∇f)
+    push!(temp, x)
+    shouldStop(x, minimum, ϵ) && break
+  end
+  return temp
+end
 
-x = [10.0, 10.0]
+function test(opt::DescentMethod, name)
+  f, ∇f, min = rosenbrock, rosenbrock_gradient, rosenbrock_minimum()
+  x = [10.0, 10.0]
+  init!(opt, x)
+  println(name * " optimize:")
+  @time n = optimize!(opt, x, f, ∇f, min)
+  @show n
+  @show x
+end
 
-# println("LBFGS-10 optimize:")
-# @btime optimize(LBFGS(10), x, f, ∇f, min)
-# println("LBFGS-5 optimize:")
-# @btime optimize(LBFGS(5), x, f, ∇f, min)
-# println("LBFGS-2 optimize:")
-# @btime optimize(LBFGS(2), x, f, ∇f, min)
-# println("LBFGS-1 optimize:")
-# @btime optimize(LBFGS(1), x, f, ∇f, min)
-# println("BFGS optimize:")
-# @btime optimize(BFGS(), x, f, ∇f, min)
-# println("Adam optimize:")
-# @btime optimize(Adam(), x, f, ∇f, min)
+function testDraw(opt::DescentMethod, name)
+  f, ∇f, min = rosenbrock, rosenbrock_gradient, rosenbrock_minimum()
+  x = [10.0, 10.0]
+  plt = drawBackground(f)
+  init!(opt, x)
+  result = optimizeWithSteps!(opt, x, f, ∇f, min)
+  drawResult!(plt, result)
+  savefig(plt, "plot.png")
+  display(plt)
+  gui()
+  readline()
+end
+
+test(Adam(), "Adam")
 
 if use_plots
-  plt = drawBackground(f)
-  resultAdam, nAdam = optimize(Adam(), x, f, ∇f, min; return_steps=true)
-  resultBfgs, nBfgs = optimize(BFGS(), x, f, ∇f, min; return_steps=true)
-  resultLBfgs, nLBfgs = optimize(LBFGS(5), x, f, ∇f, min; return_steps=true)
-  drawResult!(plt, resultAdam)
-  savefig(plt, "plot.png")
+  testDraw(Adam(), "Adam")
 end
