@@ -1,4 +1,3 @@
-using LinearAlgebra
 include("utils.jl")
 
 mutable struct LBFGS_old <: DescentMethod

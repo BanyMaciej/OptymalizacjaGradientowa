@@ -1,9 +1,9 @@
-# using Pkg
-# Pkg.add("BenchmarkTools")
+using Pkg
+Pkg.add("BenchmarkTools")
 using BenchmarkTools
+using InteractiveUtils
 
-
-use_plots = true
+use_plots = false
 if use_plots
   include("draw.jl")
 end
@@ -13,15 +13,14 @@ include("Adam_old.jl")
 include("bfgs.jl")
 include("bfgs_old.jl")
 include("lbfgs.jl")
+include("lbfgs_old.jl")
 
 include("functions.jl")
 include("utils.jl")
 
 function shouldStop(act, dest, ϵ)
-  norm(dest-act) <= ϵ
+  mse(act, dest) <= ϵ
 end
-
-ϵ = 1e-8
 
 function optimize!(M::DescentMethod, x, f, ∇f, minimum, ϵ = 1e-6)
   n = 0
@@ -34,42 +33,52 @@ function optimize!(M::DescentMethod, x, f, ∇f, minimum, ϵ = 1e-6)
 end
 
 function optimizeWithSteps!(M::DescentMethod, x, f, ∇f, minimum, ϵ = 1e-6)
-  temp = [deepcopy(x)]
+  temp = deepcopy(x)
   n = 0
   while n < 50000
     n += 1
     step!(M, x, f, ∇f)
-    push!(temp, x)
+    temp = [temp x]
     shouldStop(x, minimum, ϵ) && break
   end
   return temp
 end
 
 function test(opt::DescentMethod, name)
-  f, ∇f, min = rosenbrock, rosenbrock_gradient, rosenbrock_minimum()
-  x = [10.0, 10.0]
+  f, ∇f, min = rosenbrockPack()
+  x = Float32[10.0, 10.0]
   init!(opt, x)
   println(name * " optimize:")
+  out = []
   @time n = optimize!(opt, x, f, ∇f, min)
   @show n
   @show x
 end
 
-function testDraw(opt::DescentMethod, name)
-  f, ∇f, min = rosenbrock, rosenbrock_gradient, rosenbrock_minimum()
-  x = [10.0, 10.0]
+function testDraw(opts::Array{DescentMethod})
+  f, ∇f, min = rosenbrockPack()
   plt = drawBackground(f)
-  init!(opt, x)
-  result = optimizeWithSteps!(opt, x, f, ∇f, min)
-  drawResult!(plt, result)
+
+  for opt in opts
+    x = Float32[2.0, 2.0]
+    init!(opt, x)
+    result = optimizeWithSteps!(opt, x, f, ∇f, min, 1e-4)
+    drawResult!(plt, result, typeof(opt))
+  end
   savefig(plt, "plot.png")
   display(plt)
   gui()
   readline()
 end
 
-test(Adam(), "Adam")
+test(Adam(), "adam")
+test(Adam_old(), "adam_old")
+test(BFGS(), "bfgs")
+test(BFGS_old(), "bfgs_old")
+test(LBFGS(5), "lbfgs")
+test(LBFGS_old(5), "lbfgs_old")
+
 
 if use_plots
-  testDraw(Adam(), "Adam")
+  testDraw([Adam(), BFGS(), LBFGS(5)])
 end

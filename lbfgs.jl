@@ -1,21 +1,20 @@
-using LinearAlgebra
 include("utils.jl")
 
 mutable struct LBFGS <: DescentMethod
-  m 
-  δs 
-  γs 
-  qs 
+  m::Int
+  δs::Array{Array{Float32, 1}, 1}
+  γs::Array{Array{Float32, 1}, 1}
+  qs::Array{Array{Float32, 1}, 1} 
   LBFGS(m) = (x = new(); x.m = m; return x)
 end 
-function init!(M::LBFGS, θ; m = 1) 
-  M.m = m 
+
+function init!(M::LBFGS, θ::Array{Float32})
   M.δs = [] 
   M.γs = [] 
   M.qs = [] 
   return M 
 end 
-function step!(M::LBFGS, θ, f, ∇f) 
+function step!(M::LBFGS, θ::Array{Float32}, f, ∇f) 
   δs, γs, qs = M.δs, M.γs, M.qs
   m, g = length(δs),  ∇f(θ)
   d = -g

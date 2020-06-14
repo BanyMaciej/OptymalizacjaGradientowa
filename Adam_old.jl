@@ -31,5 +31,6 @@ function step!(M::Adam_old, θ, f, ∇f)
    M.k = k += 1  
    v̂ = v ./ (1.0 - γv^k)  
    ŝ = s ./ (1.0 - γs^k)  
-   return θ - α*v̂ ./ (sqrt.(ŝ) .+ ε) 
+   θ .= θ - α*v̂ ./ (sqrt.(ŝ) .+ ε) 
+   return θ
 end

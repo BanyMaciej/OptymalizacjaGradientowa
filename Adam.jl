@@ -1,17 +1,17 @@
 include("utils.jl")
 
-mutable struct Adam{T<:AbstractFloat} <: DescentMethod
-  α::T # learning rate  
-  ε::T # small value  
-  v # sum gradient  
-  s # sum of squared gradient  
-  γs # gradient decay  
-  γv # momentum decay  
+mutable struct Adam <: DescentMethod
+  α::Float32 # learning rate  
+  ε::Float32 # small value  
+  v::Array{Float32} # sum gradient  
+  s::Array{Float32} # sum of squared gradient  
+  γs::Float32 # gradient decay  
+  γv::Float32 # momentum decay  
   k::Int   # step counter  
-  Adam() = new{Float64}() # new uninitialized structure 
+  Adam() = new() # new uninitialized structure 
 end 
 
-function init!(M::Adam, θ::Array{Float64}; α=0.001, γv=0.9, γs=0.999, ε=1e-4)
+function init!(M::Adam, θ::Array{Float32}; α=0.001, γv=0.9, γs=0.999, ε=1e-4)
   M.α = α  
   M.ε = ε  
   M.γs = γs  
@@ -32,7 +32,7 @@ function updateGradientSquaredSum!(s, γs, g)
   nothing
 end
 
-@fastmath function step!(M::Adam, θ, f, ∇f)
+function step!(M::Adam, θ::Array{Float32, 1}, f, ∇f)
   γs, γv  = M.γs, M.γv  
   α, ε, k = M.α, M.ε, M.k  
   s, v, g = M.s, M.v, ∇f(θ) 

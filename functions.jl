@@ -1,6 +1,12 @@
 # funkcja rosenbrock'a, x - wektor wejściowy dwuwymiarowy, jakby (x, y)
 using Flux
 
+struct FunctionPack
+  f::Function
+  ∇f::Function
+  minimum::Array{Float32, 1}
+end
+
 function rosenbrock(x, a=1, b=100) 
   return (a -x[1])^2 + b*(x[2] - x[1]^2)^2
 end
@@ -11,16 +17,15 @@ function rosenbrock_gradient(x, a=1, b=100)
   return [df_x, df_y]
 end
 
-
-function rosenbrock_minimum()
-  return [1.0, 1.0]
-end
+rosenbrockPack(a=1, b=100) = (
+  f = (x) -> rosenbrock(x, a, b),
+  ∇f = (x) -> rosenbrock_gradient(x, a, b),
+  minimum = [1.0, 1.0]
+)
 
 function michalewicz(x, m=10)
   return -sum(sin(v)*sin(i*v^2/π)^(2m) for (i,v) in enumerate(x)) 
 end
-
-
 
 function michalewicz_gradient(x, m=10)
   gradient(michalewicz, x...)
@@ -32,6 +37,12 @@ function michalewicz2_gradient(x, m=10)
   return [df_x, df_y]
 end
 
+michalewicz2Pack(m) = (
+  (x) -> michalewicz(x, m),
+  (x) -> michalewicz2_gradient(x, m),
+  [2.20, 1.57]
+)
+
 function wheeler(x, a=1.5) 
   return -exp(-(x[1]*x[2] - a)^2 -(x[2]-a)^2) 
 end
@@ -41,3 +52,9 @@ function wheeler_gradient(x, a=1.5)
   df_y = (2*(x[1]^2 + 1)*x[2] - 2*a*(x[1]+1))*-wheeler(x, a)
   return [df_x, df_y]
 end
+
+wheelerPack(a) = (
+  (x) -> wheeler(x, a),
+  (x) -> wheeler_gradient(x, a),
+  [1.0, 1.5]
+)
