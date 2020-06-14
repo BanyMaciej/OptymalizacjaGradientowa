@@ -45,8 +45,8 @@ function optimizeWithSteps!(M::DescentMethod, x, f, ∇f, minimum, ϵ = 1e-6)
 end
 
 function test(opt::DescentMethod, name)
-  f, ∇f, min = rosenbrockPack()
-  x = Float32[10.0, 10.0]
+  f, ∇f, min = spherePack()
+  x = Float32[10.0, 10.0, 10.0, 10.0]
   init!(opt, x)
   println(name * " optimize:")
   out = []
@@ -56,15 +56,29 @@ function test(opt::DescentMethod, name)
 end
 
 function testDraw(opts::Array{DescentMethod})
-  f, ∇f, min = spherePack()
+  f, ∇f, m = spherePack()
   plt = drawBackground(f)
 
   for opt in opts
     x = Float32[2.0, 2.0]
     init!(opt, x)
-    result = optimizeWithSteps!(opt, x, f, ∇f, min(x), 1e-4)
+    result = optimizeWithSteps!(opt, x, f, ∇f, m(x), 1e-4)
     drawResult!(plt, result, typeof(opt))
   end
+  savefig(plt, "plot.png")
+  display(plt)
+  gui()
+  readline()
+end
+
+function testDrawLoss(opt::DescentMethod)
+  f, ∇f, m = spherePack()
+  x = Float32[2.0, 2.0]
+  init!(opt, x)
+  _minimum = m(x)
+  result = optimizeWithSteps!(opt, x, f, ∇f, _minimum, 1e-4)
+  loss = [mse(result[:, i], _minimum) for i in 1:size(result, 2)]
+  plt = drawLoss(loss, typeof(opt))
   savefig(plt, "plot.png")
   display(plt)
   gui()
@@ -80,5 +94,6 @@ end
 
 
 if use_plots
-  testDraw([Adam(), BFGS(), LBFGS(5)])
+  testDrawLoss(Adam())
+  # testDraw([Adam(), BFGS(), LBFGS(5)])
 end
