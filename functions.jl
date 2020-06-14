@@ -20,7 +20,7 @@ end
 rosenbrockPack(a=1, b=100) = (
   f = (x) -> rosenbrock(x, a, b),
   ∇f = (x) -> rosenbrock_gradient(x, a, b),
-  minimum = [1.0, 1.0]
+  minimum = (x) -> [1.0, 1.0]
 )
 
 function michalewicz(x, m=10)
@@ -37,9 +37,9 @@ function michalewicz2_gradient(x, m=10)
   return [df_x, df_y]
 end
 
-michalewicz2Pack(m) = (
+michalewiczPack(m) = (
   (x) -> michalewicz(x, m),
-  (x) -> michalewicz2_gradient(x, m),
+  (x) -> michalewicz_gradient(x, m),
   [2.20, 1.57]
 )
 
@@ -56,5 +56,19 @@ end
 wheelerPack(a) = (
   (x) -> wheeler(x, a),
   (x) -> wheeler_gradient(x, a),
-  [1.0, 1.5]
+  (x) -> [1.0, 1.5]
+)
+
+function sphere(x)
+  sum(x.^2)
+end
+
+function sphere_gradient(x)
+  x.*2
+end
+
+spherePack() = (
+  sphere,
+  sphere_gradient,
+  (x) -> zeros(Float32, size(x)...)
 )

@@ -3,7 +3,7 @@ Pkg.add("BenchmarkTools")
 using BenchmarkTools
 using InteractiveUtils
 
-use_plots = false
+use_plots = true
 if use_plots
   include("draw.jl")
 end
@@ -50,19 +50,19 @@ function test(opt::DescentMethod, name)
   init!(opt, x)
   println(name * " optimize:")
   out = []
-  @time n = optimize!(opt, x, f, ∇f, min)
+  @time n = optimize!(opt, x, f, ∇f, min(x))
   @show n
   @show x
 end
 
 function testDraw(opts::Array{DescentMethod})
-  f, ∇f, min = rosenbrockPack()
+  f, ∇f, min = spherePack()
   plt = drawBackground(f)
 
   for opt in opts
     x = Float32[2.0, 2.0]
     init!(opt, x)
-    result = optimizeWithSteps!(opt, x, f, ∇f, min, 1e-4)
+    result = optimizeWithSteps!(opt, x, f, ∇f, min(x), 1e-4)
     drawResult!(plt, result, typeof(opt))
   end
   savefig(plt, "plot.png")
@@ -71,12 +71,12 @@ function testDraw(opts::Array{DescentMethod})
   readline()
 end
 
-test(Adam(), "adam")
-test(Adam_old(), "adam_old")
-test(BFGS(), "bfgs")
-test(BFGS_old(), "bfgs_old")
-test(LBFGS(5), "lbfgs")
-test(LBFGS_old(5), "lbfgs_old")
+# test(Adam(), "adam")
+# test(Adam_old(), "adam_old")
+# test(BFGS(), "bfgs")
+# test(BFGS_old(), "bfgs_old")
+# test(LBFGS(5), "lbfgs")
+# test(LBFGS_old(5), "lbfgs_old")
 
 
 if use_plots
