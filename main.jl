@@ -1,5 +1,5 @@
-using Pkg
-Pkg.add("BenchmarkTools")
+# using Pkg
+# Pkg.add("BenchmarkTools")
 using BenchmarkTools
 using InteractiveUtils
 
@@ -46,7 +46,7 @@ end
 
 function test(opt::DescentMethod, name)
   f, ∇f, min = spherePack()
-  x = Float32[10.0, 10.0, 10.0, 10.0]
+  x = Float32[2.0, 2.0]
   init!(opt, x)
   println(name * " optimize:")
   out = []
@@ -56,18 +56,19 @@ function test(opt::DescentMethod, name)
 end
 
 function testDraw(opts::Array{DescentMethod})
-  f, ∇f, m = spherePack()
+  f, ∇f, m = michalewiczPack()
   plt = drawBackground(f)
 
   for opt in opts
-    x = Float32[2.0, 2.0]
+    x = Float32[2.5, 2.0]
     init!(opt, x)
-    result = optimizeWithSteps!(opt, x, f, ∇f, m(x), 1e-4)
+    result = optimizeWithSteps!(opt, x, f, ∇f, m(x), 1e-6)
     drawResult!(plt, result, typeof(opt))
   end
   savefig(plt, "plot.png")
   display(plt)
   gui()
+  println("Press any key to continue")
   readline()
 end
 
@@ -79,21 +80,24 @@ function testDrawLoss(opt::DescentMethod)
   result = optimizeWithSteps!(opt, x, f, ∇f, _minimum, 1e-4)
   loss = [mse(result[:, i], _minimum) for i in 1:size(result, 2)]
   plt = drawLoss(loss, typeof(opt))
-  savefig(plt, "plot.png")
+  savefig(plt, "loss.png")
   display(plt)
   gui()
+  println("Press any key to continue")
   readline()
 end
 
-# test(Adam(), "adam")
-# test(Adam_old(), "adam_old")
-# test(BFGS(), "bfgs")
-# test(BFGS_old(), "bfgs_old")
-# test(LBFGS(5), "lbfgs")
-# test(LBFGS_old(5), "lbfgs_old")
+test(Adam(), "adam")
+test(Adam_old(), "adam_old")
+test(BFGS(), "bfgs")
+test(BFGS_old(), "bfgs_old")
+test(LBFGS(5), "lbfgs")
+test(LBFGS_old(5), "lbfgs_old")
 
 
 if use_plots
   testDrawLoss(Adam())
-  # testDraw([Adam(), BFGS(), LBFGS(5)])
+  testDrawLoss(BFGS())
+  testDrawLoss(LBFGS(5))
+  testDraw([Adam(), BFGS()])
 end

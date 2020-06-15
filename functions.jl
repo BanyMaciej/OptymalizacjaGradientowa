@@ -1,5 +1,5 @@
 # funkcja rosenbrock'a, x - wektor wejściowy dwuwymiarowy, jakby (x, y)
-using Flux
+using Flux, ForwardDiff
 
 struct FunctionPack
   f::Function
@@ -28,7 +28,7 @@ function michalewicz(x, m=10)
 end
 
 function michalewicz_gradient(x, m=10)
-  gradient(michalewicz, x...)
+  ForwardDiff.gradient((v) -> michalewicz(v, m), x)
 end
 
 function michalewicz2_gradient(x, m=10)
@@ -37,10 +37,16 @@ function michalewicz2_gradient(x, m=10)
   return [df_x, df_y]
 end
 
-michalewiczPack(m) = (
+michalewiczPack(m=10) = (
   (x) -> michalewicz(x, m),
   (x) -> michalewicz_gradient(x, m),
-  [2.20, 1.57]
+  (x) -> [2.20, 1.57]
+)
+
+michalewicz2Pack(m=10) = (
+  (x) -> michalewicz(x, m),
+  (x) -> michalewicz2_gradient(x, m),
+  (x) -> [2.20, 1.57]
 )
 
 function wheeler(x, a=1.5) 
