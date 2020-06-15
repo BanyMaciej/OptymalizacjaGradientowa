@@ -23,7 +23,7 @@ function train!(m, loss, data, opt::DescentMethod, cb = () -> ())
       weightSize = size(x)
       gs[x] == nothing && continue
       f(o) = (temp = copy(x); x = o; out = loss(d...); x = temp; return out)
-      ∇f(x) = (println("gradient"); return gs[x])
+      ∇f(x) = (return gs[x])
       init!(opt, x)
       step!(opt, x, f, ∇f)
     end
@@ -58,9 +58,9 @@ function test_training(loss, optimizer::DescentMethod, epochs::Int = 20)
   return (m, losses)
 end
 
- test(opt::DescentMethod) = (@time test_training(mse, opt, 20))
+ test(opt::DescentMethod) = (@time test_training(mse, opt, 500))
 
- m, loss = test(BFGS())
+ m, loss = test(Adam())
 
 # scatter(loss[1, :])
 
