@@ -1,6 +1,6 @@
-# import Pkg
-# Pkg.add("Plots")
-# Pkg.add("PyPlot")
+using Pkg
+Pkg.add("Plots")
+Pkg.add("PyPlot")
 using Plots
 pyplot()
 

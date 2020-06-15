@@ -1,4 +1,3 @@
-# funkcja rosenbrock'a, x - wektor wejściowy dwuwymiarowy, jakby (x, y)
 using Flux, ForwardDiff
 
 struct FunctionPack

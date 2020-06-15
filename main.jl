@@ -1,5 +1,6 @@
-# using Pkg
-# Pkg.add("BenchmarkTools")
+using Pkg
+Pkg.add("BenchmarkTools")
+Pkg.add("ForwardDiff")
 using BenchmarkTools
 using InteractiveUtils
 
@@ -99,5 +100,5 @@ if use_plots
   testDrawLoss(Adam())
   testDrawLoss(BFGS())
   testDrawLoss(LBFGS(5))
-  testDraw([Adam(), BFGS()])
+  testDraw([Adam(), BFGS(), LBFGS(5)])
 end

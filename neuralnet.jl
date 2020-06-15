@@ -1,11 +1,11 @@
-# using Pkg
-# Pkg.add("Flux")
-# Pkg.add("Plots")
-# Pkg.add("PyPlot")
+using Pkg
+Pkg.add("Flux")
+Pkg.add("Plots")
+Pkg.add("PyPlot")
 include("Adam.jl")
 include("BFGS.jl")
-# using Plots
-# pyplot()
+using Plots
+pyplot()
 using Flux, Flux.Data.MNIST, Statistics
 using Flux: onehotbatch, onecold, crossentropy, throttle, Params
 using Base.Iterators: repeated
