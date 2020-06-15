@@ -32,7 +32,7 @@ function updateGradientSquaredSum!(s, γs, g)
   nothing
 end
 
-function step!(M::Adam, θ::Array{Float32, 1}, f, ∇f)
+function step!(M::Adam, θ::Array{Float32}, f, ∇f)
   γs, γv  = M.γs, M.γv  
   α, ε, k = M.α, M.ε, M.k  
   s, v, g = M.s, M.v, ∇f(θ) 

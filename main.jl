@@ -45,9 +45,8 @@ function optimizeWithSteps!(M::DescentMethod, x, f, ∇f, minimum, ϵ = 1e-6)
   return temp
 end
 
-function test(opt::DescentMethod, name)
-  f, ∇f, min = spherePack()
-  x = Float32[2.0, 2.0]
+function test(opt::DescentMethod, x::Array{Float32},  name)
+  f, ∇f, min = rosenbrockPack()
   init!(opt, x)
   println(name * " optimize:")
   out = []
@@ -73,9 +72,8 @@ function testDraw(opts::Array{DescentMethod})
   readline()
 end
 
-function testDrawLoss(opt::DescentMethod)
-  f, ∇f, m = spherePack()
-  x = Float32[2.0, 2.0]
+function testDrawLoss(opt::DescentMethod, x::Array{Float32})
+  f, ∇f, m = rosenbrockPack()
   init!(opt, x)
   _minimum = m(x)
   result = optimizeWithSteps!(opt, x, f, ∇f, _minimum, 1e-4)
@@ -88,17 +86,17 @@ function testDrawLoss(opt::DescentMethod)
   readline()
 end
 
-test(Adam(), "adam")
-test(Adam_old(), "adam_old")
-test(BFGS(), "bfgs")
-test(BFGS_old(), "bfgs_old")
-test(LBFGS(5), "lbfgs")
-test(LBFGS_old(5), "lbfgs_old")
+test(Adam(), Float32[3.0, 2.0, 3.0, 2.0], "adam")
+# test(Adam_old(), Float32[3.0, 2.0, 3.0, 2.0], "adam_old")
+test(BFGS(), Float32[3.0, 2.0, 3.0, 2.0], "bfgs")
+# test(BFGS_old(), Float32[3.0, 2.0, 3.0, 2.0], "bfgs_old")
+test(LBFGS(5), Float32[3.0, 2.0, 3.0, 2.0], "lbfgs")
+# test(LBFGS_old(5), Float32[3.0, 2.0, 3.0, 2.0], "lbfgs_old")
 
 
 if use_plots
-  testDrawLoss(Adam())
-  testDrawLoss(BFGS())
-  testDrawLoss(LBFGS(5))
-  testDraw([Adam(), BFGS(), LBFGS(5)])
+  testDrawLoss(Adam(), Float32[3.0, 2.0, 3.0, 2.0],)
+  testDrawLoss(BFGS(), Float32[3.0, 2.0, 3.0, 2.0],)
+  testDrawLoss(LBFGS(5), Float32[3.0, 2.0, 3.0, 2.0],)
+  testDraw([Adam_old(), BFGS_old(), LBFGS_old(5)])
 end

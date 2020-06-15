@@ -6,20 +6,22 @@ struct FunctionPack
   minimum::Array{Float32, 1}
 end
 
-function rosenbrock(x, a=1, b=100) 
-  return (a -x[1])^2 + b*(x[2] - x[1]^2)^2
+function rosenbrock(x, a=1, b=100)
+  acc = Float32(0.0)
+  for i=1:length(x)-1
+    acc += (a -x[i])^2 + b*(x[i+1] - x[i]^2)^2
+  end
+  return acc
 end
 
 function rosenbrock_gradient(x, a=1, b=100)
-  df_x = 4*b*x[1]^3 - 4*b*x[1]*x[2] + 2*x[1] - 2*a
-  df_y = 2*b*(x[2] - x[1]^2)
-  return [df_x, df_y]
+  ForwardDiff.gradient((v) -> rosenbrock(v, a, b), x)
 end
 
 rosenbrockPack(a=1, b=100) = (
   f = (x) -> rosenbrock(x, a, b),
   ∇f = (x) -> rosenbrock_gradient(x, a, b),
-  minimum = (x) -> [1.0, 1.0]
+  minimum = (x) -> ones(Float32, size(x)...)
 )
 
 function michalewicz(x, m=10)
